@@ -13,14 +13,11 @@ const App = () => {
   const [namesToShow, setNamesToShow] = useState('')
 
   useEffect(() => {
-    console.log('effect')
     axios.get('http://localhost:3001/persons').then(response => {
       console.log('promise fulfilled')
       setPersons(response.data)
       })
   }, [])
-
-  console.log('render', persons.length, 'persons')
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -34,6 +31,11 @@ const App = () => {
       number: newNumber,
       id: persons.length + 1
     }
+    axios.post('http://localhost:3001/persons', personObject)
+    .then(response => {
+      console.log(response.data)
+    })
+    
     setPersons(persons.concat(personObject))
     setNewName('')
     setNewNumber('')
