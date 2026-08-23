@@ -11,7 +11,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [namesToShow, setNamesToShow] = useState('')
-  const [Message, setMessage] = useState('')
+  const [message, setMessage] = useState('')
+  const [messageStatus, setMessageStatus] = useState('success')
 
   useEffect(() => {
     personService
@@ -33,12 +34,21 @@ const App = () => {
         ...newperson,
         number: newNumber
       }
-      console.log(personObject)
-      personService.updatePerson(newperson.id, personObject).then(returnedPerson => {
-        setPersons(persons.map(person => person.id !== newperson.id ? person : returnedPerson))
-        setNewName('')
-        setNewNumber('')
-      })
+      personService.updatePerson(newperson.id, personObject)
+        .then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== newperson.id ? person : returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
+        .catch(error => {
+          setMessageStatus('error')
+          setMessage(`Information of ${newName} has already been removed from server`)
+          setTimeout(() => {
+            setMessage('')
+          }, 5000)
+          setPersons(persons.filter(person => person.id !== newperson.id))
+        })
+      setMessageStatus('success')
       setMessage(`Updated ${newName}'s number`)
       setTimeout(() => {
       setMessage('')
@@ -57,6 +67,14 @@ const App = () => {
       setNewName('')
       setNewNumber('')
     })
+    .catch(error => {
+      setMessageStatus('error')
+      setMessage("User already exists in the database, reload the page!")
+      setTimeout(() => {
+        setMessage('')
+      }, 5000)
+    })
+    setMessageStatus('success')
     setMessage(`Added ${newName}`)
     setTimeout(() => {
       setMessage('')
@@ -89,7 +107,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <Notification message={Message} />
+      <Notification message={message} status={messageStatus} />
       <Filter
         value={namesToShow}
         onChange={event => setNamesToShow(event.target.value)}
