@@ -5,7 +5,6 @@ const Persons = ({ persons, deletePerson }) => {
     <div>
       {persons.map(person => (
         <Person
-          key={person.id}
           person={person}
           deletePerson={deletePerson}
         />

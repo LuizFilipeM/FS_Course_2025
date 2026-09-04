@@ -24,7 +24,6 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    console.log('button clicked', event.target)
     if (persons.some(person => person.name === newName)) {
       if (!window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         return
@@ -58,8 +57,7 @@ const App = () => {
 
     const personObject = {
       name: newName,
-      number: newNumber,
-      id: persons.length + 1
+      number: newNumber
     }
     
     personService.create(personObject).then(returnedPerson => {
