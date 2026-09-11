@@ -38,6 +38,11 @@ const App = () => {
           setPersons(persons.map(person => person.id !== newperson.id ? person : returnedPerson))
           setNewName('')
           setNewNumber('')
+          setMessageStatus('success')
+          setMessage(`Updated ${newName}'s number`)
+          setTimeout(() => {
+            setMessage('')
+            }, 5000)
         })
         .catch(error => {
           setMessageStatus('error')
@@ -47,11 +52,7 @@ const App = () => {
           }, 5000)
           setPersons(persons.filter(person => person.id !== newperson.id))
         })
-      setMessageStatus('success')
-      setMessage(`Updated ${newName}'s number`)
-      setTimeout(() => {
-      setMessage('')
-    }, 5000)
+
       return
     }
 
@@ -64,20 +65,20 @@ const App = () => {
       setPersons(persons.concat(returnedPerson))
       setNewName('')
       setNewNumber('')
-    })
-    .catch(error => {
-      setMessageStatus('error')
-      setMessage("User already exists in the database, reload the page!")
+      setMessageStatus('success')
+      setMessage(`Added ${newName}`)
       setTimeout(() => {
-        setMessage('')
-      }, 5000)
-    })
-    setMessageStatus('success')
-    setMessage(`Added ${newName}`)
-    setTimeout(() => {
-      setMessage('')
-    }, 5000)
-  }
+          setMessage('')
+        }, 5000)
+      })
+      .catch(error => {
+        setMessageStatus('error')
+        setMessage(error.response.data.error || error.message)
+        setTimeout(() => {
+          setMessage('')
+        }, 10000)
+      })
+    }
 
   const delPerson = (id) => {
     if (!window.confirm('Are you sure you want to delete this person?')) return
@@ -87,12 +88,10 @@ const App = () => {
   }
 
   const handleNewPerson = (event) => {
-    console.log(event.target.value)
     setNewName(event.target.value)
   }
 
   const handleNewNumber = (event) => {
-    console.log(event.target.value)
     setNewNumber(event.target.value)
   }
 
