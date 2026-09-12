@@ -16,7 +16,8 @@ export default defineConfig([
       
       globals: {
         ...globals.node,
-        ...globals.es2021
+        ...globals.es2021,
+        ...globals.jest
       }
     },
     rules: {
