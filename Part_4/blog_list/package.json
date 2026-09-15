@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development nodemon index.js",
     "lint": "eslint .",
-    "test": "jest --verbose"
+    "test": "NODE_ENV=test jest --verbose --runInBand"
   },
   "author": "Luiz Filipe Magalhães Freitas",
   "license": "ISC",
@@ -24,9 +24,10 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.10.0",
     "globals": "^17.12.0",
-    "jest": "^30.5.1"
+    "jest": "^30.5.1",
+    "supertest": "^7.2.2"
   },
   "jest": {
-   "testEnvironment": "node"
- }
+    "testEnvironment": "node"
+  }
 }
