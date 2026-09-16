@@ -93,6 +93,47 @@ test('blog without title or url is not added', async () => {
 
 },100000)
 
+test('a blog can be deleted', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+  console.log(blogToDelete.id)
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+
+  const titles = blogsAtEnd.map(r => r.title)
+  expect(titles).not.toContain(blogToDelete.title)
+},100000)
+
+test('a blog can be updated', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
+
+  const updatedBlog = {
+    title: 'Updated Blog',
+    author: 'Updated Author',
+    url: 'https://updatedblog.com',
+    likes: 10
+  }
+
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const blog = blogsAtEnd.find(b => b.id === blogToUpdate.id)
+  expect(blog.title).toBe('Updated Blog')
+  expect(blog.author).toBe('Updated Author')
+  expect(blog.url).toBe('https://updatedblog.com')
+  expect(blog.likes).toBe(10)
+},100000)
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
