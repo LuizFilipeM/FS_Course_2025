@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
-const validator = require('validator')
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -16,18 +15,7 @@ const userSchema = new mongoose.Schema({
   },
   passwordHash: {
     type: String,
-    required: true,
-    validate: {
-      validator: function(valor) {
-        return validator.isStrongPassword(valor, {
-          minLength: 8,
-          minLowercase: 1,
-          minUppercase: 1,
-          minNumbers: 1,
-        })
-      },
-      message: 'The password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one number.'
-    }
+    required: true
   },
   blogs: [
     {
