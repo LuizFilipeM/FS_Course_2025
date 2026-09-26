@@ -3,7 +3,7 @@ const usersRouter = require('express').Router()
 const User = require('../models/user')
 
 usersRouter.post('/', async (request, response) => {
-  const { username, name, password } = request.body
+  const { username, name, password, idBlogs } = request.body
   if (!password || password.length < 8) {
     return response.status(400).json({ error: 'A senha deve ter no mínimo 8 caracteres.' })
   }
@@ -24,6 +24,7 @@ usersRouter.post('/', async (request, response) => {
     username,
     name,
     passwordHash,
+    idBlogs
   })
 
   const savedUser = await user.save()
@@ -32,7 +33,7 @@ usersRouter.post('/', async (request, response) => {
 })
 
 usersRouter.get('/', async (request, response) => {
-  const users = await User.find({})
+  const users = await User.find({}).populate('idBlogs')
   response.json(users)
 })
 

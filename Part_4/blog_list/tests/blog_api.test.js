@@ -19,7 +19,7 @@ beforeEach(async () => {
 
   blogObject = new Blog(helper.initialBlogs[2])
   await blogObject.save()
-})
+},)
 
 test('blogs are returned as json', async () => {
   await api
@@ -42,10 +42,11 @@ test('id property is defined', async () => {
 
 test('a valid blog can be added', async () => {
   const newBlog = {
-    title: 'Test Blog',
+    title: 'Test Blog t',
     author: 'Test Author',
     url: 'https://testblog.com',
-    likes: 5
+    likes: 5,
+    idUser:['6ab7b9af7c6381a1808f1eb7']
   }
 
   await api
@@ -59,7 +60,7 @@ test('a valid blog can be added', async () => {
 
   const titles = blogsAtEnd.map(n => n.title)
   expect(titles).toContain(
-    'Test Blog'
+    'Test Blog t'
   )
 },100000)
 
@@ -139,26 +140,45 @@ describe('when there is initially one user in db', () => {
   beforeEach(async () => {
     await User.deleteMany({})
 
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash, name:'SuperRoot' })
+    const blogsAtStart = await helper.blogsInDb()
 
-    await user.save()
+    const passwordHash = await bcrypt.hash('sekret', 10)
+
+    const user = new User({ username: 'root', passwordHash, name:'SuperRoot', idBlogs:[blogsAtStart[0].id,blogsAtStart[1].id ] })
+
+    const savedUser = await user.save()
+
+    await api
+      .put(`/api/blogs/${blogsAtStart[0].id}`)
+      .send( { idUser:savedUser.id } )
+
+    await api
+      .put(`/api/blogs/${blogsAtStart[1].id}`)
+      .send( { idUser:savedUser.id } )
+
   })
 
   test('creation succeeds with a fresh username', async () => {
+    const blogsAtStart = await helper.blogsInDb()
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
       username: 'mluukkai',
       name: 'Matti Luukkainen',
-      password: 'salainen',
+      password: 'Salainen12@',
+      idBlogs:[blogsAtStart[2].id]
     }
 
-    await api
+    const savedUser = await api
       .post('/api/users')
       .send(newUser)
       .expect(201)
       .expect('Content-Type', /application\/json/)
+
+    await api
+      .put(`/api/blogs/${blogsAtStart[2].id}`)
+      .send( { idUser:savedUser.body.id } )
+
 
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
